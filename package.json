@@ -1,8 +1,10 @@
 {
 	"name": "shure-mxn5",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"api_version": "1.0.0",
-	"keywords": [ "Shure" ],
+	"keywords": [
+		"Shure"
+	],
 	"manufacturer": "Shure",
 	"product": "MXN-5C",
 	"shortname": "mxn5",
@@ -12,7 +14,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
-	"type": "git",
+		"type": "git",
 		"url": "git+https://github.com/bitfocus/companion-module-shure-mxn5.git"
 	},
 	"author": "Joseph Adams <josephdadams@gmail.com>",

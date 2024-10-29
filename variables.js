@@ -28,6 +28,7 @@ module.exports = async function (self) {
 		variableDefinitions.push({ variableId: `channel_name_${i}`, name: `Channel ${i} Name` })
 		variableDefinitions.push({ variableId: `channel_mute_${i}`, name: `Channel ${i} Mute` })
 		variableDefinitions.push({ variableId: `na_channel_name_${i}`, name: `NA Channel ${i} Name` })
+        variableDefinitions.push({ variableId: `channel_audio_gain_${i}`, name: `Channel ${i} Audio Gain` })
 		variableDefinitions.push({ variableId: `peq_filter${i}`, name: `PEQ Filter ${i}` })
 		variableDefinitions.push({ variableId: `delay${i}`, name: `Delay ${i}` })
 		variableDefinitions.push({ variableId: `sig_gen_type${i}`, name: `Signal Generator Type ${i}` })

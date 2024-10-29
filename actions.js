@@ -79,13 +79,27 @@ module.exports = function (self) {
 			],
 			callback: async ({options}) => {
 				let gain = 0
+				let oldgain = self.state[`channel_audio_gain_${options.channel}`] ?? 0
 				if (typeof options.gain === 'number') {
-					gain = Math.round(options.gain * 10)
+					gain = Math.round(options.gain * 10) / 10
+				} else {
+					self.log('error', `Can't increment gain, input is not a number (${gain})`)
+				}
+				if (oldgain + gain >= 30) {
+					self.sendCmd(`< SET ${options.channel} AUDIO_GAIN_HI_RES 1400 >`)
+					self.updateVariable(`channel_audio_gain_${options.channel}`, 30)
+					return
+				}
+				if (oldgain + gain <= -110) {
+					self.sendCmd(`< SET ${options.channel} AUDIO_GAIN_HI_RES 0 >`)
+					self.updateVariable(`channel_audio_gain_${options.channel}`, -110)
+					return
 				}
 				let dir = 'INC'
 				if (gain < 0) dir = 'DEC'
 
-				self.sendCmd(`< SET ${options.channel} AUDIO_GAIN_HI_RES ${dir} ${gain} >`)
+				self.sendCmd(`< SET ${options.channel} AUDIO_GAIN_HI_RES ${dir} ${Math.abs(gain * 10)} >`)
+				self.updateVariable(`channel_audio_gain_${options.channel}`, oldgain + gain)
             }
 		},
 		'channel_setgain': {
@@ -112,7 +126,7 @@ module.exports = function (self) {
 			callback: async ({options}) => {
 				let gain = 1100
 				if (typeof options.gain === 'number') {
-					gain = Math.round(options.gain * 10 - 1100)
+					gain = Math.round(1100 + options.gain * 10)
 				}
 				self.sendCmd(`< SET ${options.channel} AUDIO_GAIN_HI_RES ${gain} >`)
             }
@@ -216,15 +230,16 @@ module.exports = function (self) {
 					type: 'number',
 					label: 'Gain',
 					id: 'gain',
-					tooltip: 'Value in dB, Range is -110dB to +30dB, Steps of 0.1dB',
+					tooltip: 'Value in dB, Range is -110dB to +21dB, Steps of 0.1dB',
 					default: 0,
 					min: -110,
-					max: 30,
+					max: 21,
 					steps: 0.1
 				}
             ],
             callback: ({options}) => {
-                self.sendCmd(`< SET 3 SIG_GEN_TYPE ${ options.type } > < SET 3 SIG_GEN_FREQ ${ options.freq } > < SET 3 SIG_GEN_GAIN ${ options.gain } >`)
+				let gain = Math.max( Math.min( Math.round(1100 + options.gain * 10), 1310), 0 )
+                self.sendCmd(`< SET 3 SIG_GEN_TYPE ${ options.type } > < SET 3 SIG_GEN_FREQ ${ options.freq } > < SET 3 SIG_GEN_GAIN ${ gain } >`)
             }
         }
 	})

@@ -3,6 +3,10 @@ See HELP.MD for more information about this module.
 
 # Version History
 
+## v2.1.0 (2024-10-29)
+- Feature: Add variables for gain of individual channels
+- Bugfix: fix handling of gain values, was affecting setting gain below 0 or lowering gain
+
 ## v2.0.0 (2024-05-23)
 - Major: Update for compatibility with Companion 3.x
 - Feature: Upgrade legacy feedbacks to boolean feedback

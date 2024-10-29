@@ -180,7 +180,11 @@ class MXN5Instance extends InstanceBase {
 						self.updateVariable('meter_rate', this.trimShureString(commandVal));
 						break;
 					case 'AUDIO_GAIN_HI_RES':
-						self.updateVariable('audio_gain_hi_res', this.trimShureString(commandVal));
+						if (commandNum) {
+							self.updateVariable(`channel_audio_gain_${commandNum}`, this.gainStringToNumber(this.trimShureString(commandVal)))	
+						} else {
+							self.updateVariable('audio_gain_hi_res', this.gainStringToNumber(this.trimShureString(commandVal)))
+						}
 						break;
 					case 'DEVICE_AUDIO_MUTE':
 						self.updateVariable('device_audio_mute', this.trimShureString(commandVal));
@@ -222,7 +226,7 @@ class MXN5Instance extends InstanceBase {
 						self.updateVariable(`sig_gen_freq_${commandNum}`, this.trimShureString(commandVal));
 						break;
 					case 'SIG_GEN_GAIN':
-						self.updateVariable(`sig_gen_gain_${commandNum}`, this.trimShureString(commandVal));
+						self.updateVariable(`sig_gen_gain_${commandNum}`, this.gainStringToNumber(this.trimShureString(commandVal)));
 						break;
 					case 'SIG_GEN':
 						self.updateVariable(`sig_gen_status_${commandNum}`, this.trimShureString(commandVal));
@@ -289,12 +293,29 @@ class MXN5Instance extends InstanceBase {
 	//updateVariable: updates both the system instance variable and local variable for button display and feedback purposes
 	updateVariable(variableName, value) {
 		// this.log('debug', 'updating variable ' + variableName + ' to '+ value)
+		if (typeof value === 'string' && value.match(/^\d+$/)) {value = parseInt(value)} 
 		this.setVariableValues({[variableName]: value})
 		this.state[variableName] = value
 	}
 
+	/**
+	 * trims the strings returned by the api
+	 * @param {string} string 
+	 * @returns {string}
+	 */
 	trimShureString(string) {
 		return string.replace(/^\{(.+?)\s*\}$/, "$1")
+	}
+
+	/**
+	 * converts api highres gain string to a number
+	 * @param {string} string 
+	 * @returns {number}
+	 */
+	gainStringToNumber(string) {
+		const highres = parseInt(string)
+		if (isNaN(highres)) return 0
+		return Math.round(highres - 1100) / 10
 	}
 
 	sendCmd(cmd) {
